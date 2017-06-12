@@ -4,7 +4,7 @@
 The numbered project folders here are for the reviewers.
 
 
--- The All Projects folder is my work area --
+-- The All Projects folder in udacity-projects is my work area --
 
 -- all projects can be found in their project folders respectively. --
 
