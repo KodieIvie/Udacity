@@ -34,28 +34,7 @@ for e in topAuthor:
     print(e[0] + ' - ' + str(e[1]) + ' Views')
 
 # Third query question
-# create a view with total requests
-cur.execute("CREATE OR REPLACE VIEW requests AS "
-            "SELECT to_char(time, 'Month DD, YYYY') AS date, "
-            "COUNT(status) AS total "
-            "FROM log "
-            "GROUP BY date "
-            "ORDER BY date ASC;")
-
-# create a view of requests with errors.
-cur.execute("CREATE OR REPLACE VIEW errors AS "
-            "SELECT to_char(time, 'Month DD, YYYY') AS date, "
-            "COUNT(status) AS err, status "
-            "FROM log "
-            "WHERE status = '404 NOT FOUND' "
-            "GROUP BY date, status "
-            "ORDER BY date ASC;")
-
-# create a view for > 1% errors a day.
-cur.execute("CREATE OR REPLACE VIEW percent AS "
-            "SELECT e.date, e.err, r.total, (e.err/r.total::decimal) AS perc "
-            "FROM errors AS e JOIN requests AS r ON e.date = r.date "
-            "ORDER BY date ASC;")
+# Revised this with previous reviewers recommendation.
 
 cur.execute("SELECT date, round(perc*100.0, 1) from percent "
             "WHERE perc > .01 "
@@ -73,4 +52,4 @@ conn.close()
 # give credit where credit is due.
 """Thanks to psycopg2 documentation for the skeleton template and all the \n
 great info, postgresql documentation, also the Udacity forums, \n
-stack overflow and google"""
+stack overflow and google. udacity reviewer"""
