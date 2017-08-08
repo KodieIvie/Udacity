@@ -1,0 +1,32 @@
+<html>
+
+<head>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+	</head>
+<body>
+
+<h1>New catalog Item</h1>
+
+<form action="/category/<int:category_id>/catalog/new/" method = 'post'>
+
+
+	<p>Name:</p>
+		<input type ='text' size='30' name='name'>
+	<p>Description:</p>
+		<input type ='text' size='80' name='description'>
+	<p>Price:</p>
+		<input type ='text' size='30' name='price'>
+	<p>Catagory:</p>
+		<input type ='radio'  name='catagory' value ='Action'>Action</br>
+		<input type ='radio'  name='catagory' value ='Comedy'>Comedy</br>
+		<input type ='radio' name='catagory' value ='Drama'>Drama</br>
+		<input type ='radio'  name='catagory' value ='Horror'>Horror</br>
+	</br>
+
+
+<input type='submit' value='Create'>
+
+</form>
+
+</body>
+</html>

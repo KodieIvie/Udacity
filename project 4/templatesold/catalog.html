@@ -1,0 +1,20 @@
+<html>
+
+<body>
+
+	<h1>All Catalogs</h1>
+
+
+	{% for i in categories %}
+
+	<div>
+		<p>{{i.id}}</p>
+		<p>{{i.name}}</p>
+		<p>{{i.description}}</p>
+	</div>
+
+
+	{% endfor %}
+</body>
+
+</html>

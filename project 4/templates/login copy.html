@@ -1,0 +1,213 @@
+<head>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+
+
+  <!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <meta name="google-signin-client_id" content="959813201878-49lppqrhplgnn394g31mdvu9pq1f14ci.apps.googleusercontent.com">
+  <!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
+
+
+</head>
+
+
+<body>  
+
+  <!-- Button to open the modal login form -->
+  <!-- <button onclick="document.getElementById('id01').style.display='block'">Login</button> -->
+
+<!-- The Modal --><!-- 
+<div id="id01" class="modal">
+  <span onclick="document.getElementById('id01').style.display='none'" 
+class="close" title="Close Modal">&times;</span>
+
+<!-- Modal Content -->
+  <!-- <form class="modal-content animate" action="/action_page.php">
+    <div class="imgcontainer">
+      <img src="img_avatar2.png" alt="Avatar" class="avatar">
+    </div>
+
+    <div class="container">
+      <label><b>Username</b></label>
+      <input type="text" placeholder="Enter Username" name="uname" required>
+
+      <label><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" name="psw" required>
+
+      <button type="submit">Login</button>
+      <input type="checkbox" checked="checked"> Remember me
+    </div>
+
+    <div class="container" style="background-color:#f1f1f1">
+      <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+      <span class="psw">Forgot <a href="#">password?</a></span>
+    </div>
+  </form>
+</div> -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      <img src="https://merchant.bambora.com/Assets/images/default-avatar.png" alt="Avatar" class="img img-responsive imgcontainer">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+     <form action="/users" method="POST" role="form">
+       <label><b>Username:</b></label>
+       <input type="text" placeholder="Enter Username" name="username" required>
+
+       <label><b>Password:</b></label>
+       <input type="password" placeholder="Enter Password" name="password" required>
+
+       <button type="submit">Login</button>
+       <!-- <input type="checkbox" checked="checked"> Remember me -->
+       <!-- </div> -->
+
+       <!-- <div class="container" style="background-color:#f1f1f1"> -->
+       <!-- <button type="button" class="cancelbtn">Cancel</button> -->
+       <span class="psw">Forgot <a href="#">password?</a></span>
+     </form>
+   </div>
+   <div class="row">
+     <div class="col-md-6">
+      <!-- GOOGLE PLUS SIGN IN-->
+      <div id="signInButton" class="g-signin"
+      data-scope="openid email"
+      data-clientid="959813201878-49lppqrhplgnn394g31mdvu9pq1f14ci.apps.googleusercontent.com"
+      data-redirecturi="postmessage"
+      data-accesstype="offline"
+      data-cookiepolicy="single_host_origin"
+      data-callback="signInCallback"
+      data-approvalprompt="force">
+    </div>
+  </div>
+  <div class="col-md-6">
+   <div>
+    <fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
+    <a href='javascript:sendTokenToServer()'>Login with Facebook</a>
+  </fb:login-button>
+
+
+</div>
+</div>
+</div>
+
+<script>
+  function signInCallback(authResult) {
+    if (authResult['code']) {
+
+    // Hide the sign-in button now that the user is authorized
+    $('#signinButton').attr('style', 'display: none');
+
+    // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
+    $.ajax({
+      type: 'POST',
+      url: '/gconnect?state={{STATE}}',
+      processData: false,
+      data: authResult['code'],
+      contentType: 'application/octet-stream; charset=utf-8',
+      success: function(result) {
+        // Handle or verify the server response if necessary.
+        if (result) {
+          $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
+          setTimeout(function() {
+            window.location.href = "/login";
+          }, 4000);
+          
+
+        } else if (authResult['error']) {
+
+          console.log('There was an error: ' + authResult['error']);
+        } else {
+          $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+        }
+
+      }
+      
+    }); } }
+  </script>
+
+
+
+  <!--END GOOGLE PLUS SIGN IN -->
+
+  <!--FACEBOOK SIGN IN -->
+  <script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : '846524132078825',
+    cookie     : true,  // enable cookies to allow the server to access 
+                        // the session
+    xfbml      : true,  // parse social plugins on this page
+    version    : 'v2.8' // use version 2.8
+  });
+
+    };
+
+  // Load the SDK asynchronously
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+  // Here we run a very simple test of the Graph API after login is
+  // successful.  See statusChangeCallback() for when this call is made.
+  function sendTokenToServer() {
+    var access_token = FB.getAuthResponse()['accessToken'];
+    console.log(access_token)
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me', function(response) {
+      console.log('Successful login for: ' + response.name);
+      $.ajax({
+        type: 'POST',
+        url: '/fbconnect?state={{STATE}}',
+        processData: false,
+        data: access_token,
+        contentType: 'application/octet-stream; charset=utf-8',
+        success: function(result) {
+        // Handle or verify the server response if necessary.
+        if (result) {
+          $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
+          setTimeout(function() {
+            window.location.href = "/restaurant";
+          }, 4000);
+          
+
+        } else {
+          $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+        }
+
+      }
+      
+    });
+
+
+    });
+  }
+</script>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<!-- <script>
+Get the modal
+var modal = document.getElementById('id01');
+
+When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+</script> -->
+</body>
+
+</html>
