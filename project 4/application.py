@@ -127,7 +127,6 @@ def gconnect():
 
 # User Helper Functions
 
-
 def createUser(login_session):
     newUser = User(name=login_session['username'], email=login_session[
                    'email'], picture=login_session['picture'])
@@ -136,11 +135,9 @@ def createUser(login_session):
     user = session.query(User).filter_by(email=login_session['email']).one()
     return user.id
 
-
 def getUserInfo(user_id):
     user = session.query(User).filter_by(id=user_id).one()
     return user
-
 
 def getUserID(email):
     try:
@@ -225,8 +222,6 @@ def get_user(id):
 @auth.login_required
 def get_resource():
     return jsonify({ 'data': 'Hello, %s!' % g.user.username })
-
-
 
 # Show all categories
 @app.route('/')
@@ -313,12 +308,12 @@ def newCatalogItem(category_id):
     category = session.query(Category).filter_by(id=category_id).one()
     if login_session['user_id'] != category.user_id:
         return "<script>function myFunction() {alert('You are not authorized to add catalog items to this category. Please create your own category in order to add items.');}</script><body onload='myFunction()''>"
-        if request.method == 'POST':
-            newItem = CatalogItem(name=request.form['name'], description=request.form['description'], category_id=category_id, user_id=category.user_id)
-            session.add(newItem)
-            session.commit()
-            flash('New Catalog %s Item Successfully Created' % (newItem.name))
-            return redirect(url_for('showCatalog', category_id=category_id))
+    if request.method == 'POST':
+	    newItem = CatalogItem(name=request.form['name'], description=request.form['description'], category_id=category_id, user_id=category.user_id)
+	    session.add(newItem)
+	    session.commit()
+	    flash('New Catalog %s Item Successfully Created' % (newItem.name))
+	    return redirect(url_for('showCatalog', category_id=category_id))
     else:
         return render_template('newcatalogitem.html', category_id=category_id)
 
@@ -341,7 +336,7 @@ def editCatalogItem(category_id, catalog_id):
         session.add(editedItem)
         session.commit()
         flash('Catalog Item Successfully Updated!')
-        return redirect(url_for('showCatalog', category_id=category_id))
+        return redirect(url_for('showCatalog', category_id=category_id, catalog_id=catalog_id))
     else:
         return render_template('editcatalogitem.html', category_id=category_id, catalog_id=catalog_id, item=editedItem)
 

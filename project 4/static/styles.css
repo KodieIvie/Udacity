@@ -118,14 +118,11 @@ u }
  	background-color: #42C3C9;
  	padding: 20px;
 }
-.menu-item {
+.catalog-item {
 	background: #F0F0F0;
 	padding: 20px;
 	margin: 20px;
 	margin-left: -20px;
-}
-.menu-price {
-	font-weight: 700;
 }
 .creator {
 	padding-right: 20px;
@@ -153,5 +150,7 @@ u }
 .flash li {
 	list-style-type: none;
 	text-align: center;
-
+}
+.item {
+	border: 1px solid #7B7573;
 }
