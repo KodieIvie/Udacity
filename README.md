@@ -20,9 +20,9 @@ sqlalchemy, flask, itsdangerous, passlib, flask_httpauth, oauth2client
 
 
 
-					*****************************
-					!!!!**** !IMPORTANT! ****!!!!
-					*****************************
+	*****************************
+	!!!!**** !IMPORTANT! ****!!!!
+	*****************************
 
 This app was developed using python version 2.7 and might not work
 properly in other versions..
