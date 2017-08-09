@@ -1,7 +1,7 @@
 This is the catalog project for the udacity full stack nano degree program.
 It provides a place to create catalog categories and items in the catalog.
 It uses a 3rd party Oauth registration and login in system,
-which ensures only authorized users can manage data in the db.
+which ensures only authorized users can manage their own data in the db.
 
 ****** secure api endpoint *******
 It also has a secure api endpoint which you can access at
