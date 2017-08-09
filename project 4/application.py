@@ -1,4 +1,8 @@
-import random, string, json, httplib2, requests 
+import random
+import string
+import json
+import httplib2
+import requests
 from model import Base, User, Category, CatalogItem
 from flask import Flask, render_template, request, redirect
 from flask import jsonify, url_for, flash, abort, g, make_response
@@ -10,12 +14,11 @@ from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 from flask import session as login_session
 
-
 app = Flask(__name__)
 auth = HTTPBasicAuth()
 
 CLIENT_ID = json.loads(open
-	('client_secrets.json', 'r').read())['web']['client_id']
+                       ('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "catalog"
 
 # Connect to Database and create database session
@@ -33,6 +36,7 @@ def showLogin():
     login_session['state'] = state
     # return "The current session state is %s" % login_session['state']
     return render_template('login.html', STATE=state)
+
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
@@ -86,8 +90,9 @@ def gconnect():
     stored_credentials = login_session.get('credentials')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_credentials is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        response = make_response(
+            json.dumps('Current user is already connected.'),
+            200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -120,24 +125,27 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;' \
+              '-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
     return output
 
-# User Helper Functions
 
+# User Helper Functions
 def createUser(login_session):
     newUser = User(name=login_session['username'], email=login_session[
-                   'email'], picture=login_session['picture'])
+        'email'], picture=login_session['picture'])
     session.add(newUser)
     session.commit()
     user = session.query(User).filter_by(email=login_session['email']).one()
     return user.id
 
+
 def getUserInfo(user_id):
     user = session.query(User).filter_by(id=user_id).one()
     return user
+
 
 def getUserID(email):
     try:
@@ -148,7 +156,6 @@ def getUserID(email):
 
 
 # DISCONNECT - Revoke a current user's token and reset their login_session
-
 @app.route('/gdisconnect')
 def gdisconnect():
     # Only disconnect a connected user.
@@ -172,12 +179,13 @@ def gdisconnect():
 
 @auth.verify_password
 def verify_password(username_or_token, password):
-    #Try to see if it's a token first
+    # Try to see if it's a token first
     user_id = User.verify_auth_token(username_or_token)
     if user_id:
-        user = session.query(User).filter_by(id = user_id).one()
+        user = session.query(User).filter_by(id=user_id).one()
     else:
-        user = session.query(User).filter_by(username = username_or_token).first()
+        user = session.query(User).filter_by(
+            username=username_or_token).first()
         if not user or not user.verify_password(password):
             return False
     g.user = user
@@ -191,25 +199,25 @@ def get_auth_token():
     return jsonify({'token': token.decode('ascii')})
 
 
-
-@app.route('/users', methods = ['POST'])
+@app.route('/users', methods=['POST'])
 def new_user():
     username = request.json.get('username')
     password = request.json.get('password')
     if username is None or password is None:
         print "missing arguments"
-        abort(400) 
-        
-    if session.query(User).filter_by(username = username).first() is not None:
+        abort(400)
+
+    elif session.query(User).filter_by(username=username).first() is not None:
         print "existing user"
         user = session.query(User).filter_by(username=username).first()
-        return jsonify({'message':'user already exists'}), 200#, {'Location': url_for('get_user', id = user.id, _external = True)}
-        
-    user = User(username = username)
-    user.hash_password(password)
-    session.add(user)
-    session.commit()
-    return jsonify({ 'username': user.username }), 201#, {'Location': url_for('get_user', id = user.id, _external = True)}
+        return jsonify({'message': 'user already exists'}), 200
+    else:
+        user = User(username=username)
+        user.hash_password(password)
+        session.add(user)
+        session.commit()
+        return jsonify({'username': user.username}), 201
+
 
 @app.route('/api/users/<int:id>')
 def get_user(id):
@@ -218,10 +226,18 @@ def get_user(id):
         abort(400)
     return jsonify({'username': user.username})
 
-@app.route('/api/resource')
+
+@app.route('/api/json')
 @auth.login_required
 def get_resource():
-    return jsonify({ 'data': 'Hello, %s!' % g.user.username })
+    categories = session.query(Category).all()
+    items = session.query(CatalogItem).all()
+    user = session.query(User).all()
+    return jsonify({'data': 'Hello, %s!' % g.user.username},
+                   [i.serialize for i in categories],
+                   [i.serialize for i in items],
+                   [i.serialize for i in user])
+
 
 # Show all categories
 @app.route('/')
@@ -233,8 +249,8 @@ def showCategories():
     else:
         return render_template('categories.html', categories=categories)
 
-# Create a new category
 
+# Create a new category
 @app.route('/category/new/', methods=['GET', 'POST'])
 def newCategory():
     if 'username' not in login_session:
@@ -249,9 +265,8 @@ def newCategory():
     else:
         return render_template('newCategory.html')
 
+
 # Edit a category
-
-
 @app.route('/category/<int:category_id>/edit/', methods=['GET', 'POST'])
 def editCategory(category_id):
     editedCategory = session.query(
@@ -259,7 +274,10 @@ def editCategory(category_id):
     if 'username' not in login_session:
         return redirect('/login')
     if editedCategory.user_id != login_session['user_id']:
-        return "<script>function myFunction() {alert('You are not authorized to edit this category. Please create your own category in order to edit.');}</script><body onload='myFunction()''>"
+        return "<script>function myFunction() {alert('You are not " \
+               "authorized to edit this category. Please create your own " \
+               "category in order to edit.');}</script>" \
+               "<body onload='myFunction()''>"
     if request.method == 'POST':
         if request.form['name']:
             editedCategory.name = request.form['name']
@@ -277,14 +295,19 @@ def deleteCategory(category_id):
     if 'username' not in login_session:
         return redirect('/login')
     if categoryToDelete.user_id != login_session['user_id']:
-        return "<script>function myFunction() {alert('You are not authorized to delete this category. Please create your own category in order to delete.');}</script><body onload='myFunction()''>"
+        return "<script>function myFunction() {alert('You are not" \
+               " authorized to delete this category. Please create " \
+               "your own category in order to delete.');}</script>" \
+               "<body onload='myFunction()''>"
     if request.method == 'POST':
         session.delete(categoryToDelete)
         flash('%s Successfully Deleted' % categoryToDelete.name)
         session.commit()
         return redirect(url_for('showCategories', category_id=category_id))
     else:
-        return render_template('deleteCategory.html', category=categoryToDelete)
+        return render_template('deleteCategory.html',
+                               category=categoryToDelete)
+
 
 # Show a category catalog
 @app.route('/category/<int:category_id>/')
@@ -294,10 +317,13 @@ def showCatalog(category_id):
     creator = getUserInfo(category.user_id)
     items = session.query(CatalogItem).filter_by(
         category_id=category_id).all()
-    if 'username' not in login_session or creator.id != login_session['user_id']:
-        return render_template('publiccatalog.html', items=items, category=category, creator=creator)
+    if 'username' not in login_session or creator.id != login_session[
+            'user_id']:
+        return render_template('publiccatalog.html', items=items,
+                               category=category, creator=creator)
     else:
-        return render_template('catalog.html', items=items, category=category, creator=creator)
+        return render_template('catalog.html', items=items, category=category,
+                               creator=creator)
 
 
 # Create a new catalog item
@@ -307,27 +333,36 @@ def newCatalogItem(category_id):
         return redirect('/login')
     category = session.query(Category).filter_by(id=category_id).one()
     if login_session['user_id'] != category.user_id:
-        return "<script>function myFunction() {alert('You are not authorized to add catalog items to this category. Please create your own category in order to add items.');}</script><body onload='myFunction()''>"
+        return "<script>function myFunction() {alert('You are not " \
+               "authorized to add catalog items to this category. " \
+               "Please create your own category in order to add items.');}" \
+               "</script><body onload='myFunction()''>"
     if request.method == 'POST':
-	    newItem = CatalogItem(name=request.form['name'], description=request.form['description'], category_id=category_id, user_id=category.user_id)
-	    session.add(newItem)
-	    session.commit()
-	    flash('New Catalog %s Item Successfully Created' % (newItem.name))
-	    return redirect(url_for('showCatalog', category_id=category_id))
+        newItem = CatalogItem(name=request.form['name'],
+                              description=request.form['description'],
+                              category_id=category_id,
+                              user_id=category.user_id)
+        session.add(newItem)
+        session.commit()
+        flash('New Catalog %s Item Successfully Created' % (newItem.name))
+        return redirect(url_for('showCatalog', category_id=category_id))
     else:
         return render_template('newcatalogitem.html', category_id=category_id)
 
+
 # Edit a catalog item
-
-
-@app.route('/category/<int:category_id>/catalog/<int:catalog_id>/edit', methods=['GET', 'POST'])
+@app.route('/category/<int:category_id>/catalog/<int:catalog_id>/edit',
+           methods=['GET', 'POST'])
 def editCatalogItem(category_id, catalog_id):
     if 'username' not in login_session:
         return redirect('/login')
     editedItem = session.query(CatalogItem).filter_by(id=catalog_id).one()
     category = session.query(Category).filter_by(id=category_id).one()
     if login_session['user_id'] != category.user_id:
-        return "<script>function myFunction() {alert('You are not authorized to edit catalog items to this category. Please create your own category in order to edit items.');}</script><body onload='myFunction()''>"
+        return "<script>function myFunction() {alert('You are not authorized" \
+               " to edit catalog items to this category. Please " \
+               "create your own category in order to edit items.');}" \
+               "</script><body onload='myFunction()''>"
     if request.method == 'POST':
         if request.form['name']:
             editedItem.name = request.form['name']
@@ -336,20 +371,26 @@ def editCatalogItem(category_id, catalog_id):
         session.add(editedItem)
         session.commit()
         flash('Catalog Item Successfully Updated!')
-        return redirect(url_for('showCatalog', category_id=category_id, catalog_id=catalog_id))
+        return redirect(url_for('showCatalog', category_id=category_id,
+                                catalog_id=catalog_id))
     else:
-        return render_template('editcatalogitem.html', category_id=category_id, catalog_id=catalog_id, item=editedItem)
+        return render_template('editcatalogitem.html', category_id=category_id,
+                               catalog_id=catalog_id, item=editedItem)
 
 
-# Delete a catalog item 
-@app.route('/category/<int:category_id>/catalog/<int:catalog_id>/delete', methods=['GET', 'POST'])
+# Delete a catalog item
+@app.route('/category/<int:category_id>/catalog/<int:catalog_id>/delete',
+           methods=['GET', 'POST'])
 def deleteCatalogItem(category_id, catalog_id):
     if 'username' not in login_session:
         return redirect('/login')
     category = session.query(Category).filter_by(id=category_id).one()
     itemToDelete = session.query(CatalogItem).filter_by(id=catalog_id).one()
     if login_session['user_id'] != category.user_id:
-        return "<script>function myFunction() {alert('You are not authorized to delete catalog items to this category. Please create your own category in order to delete items.');}</script><body onload='myFunction()''>"
+        return "<script>function myFunction() {alert('You are not " \
+               "authorized to delete catalog items to this category. " \
+               "Please create your own category in order to delete" \
+               " items.');}</script><body onload='myFunction()''>"
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
@@ -357,6 +398,7 @@ def deleteCatalogItem(category_id, catalog_id):
         return redirect(url_for('showCatalog', category_id=category_id))
     else:
         return render_template('deleteCatalogItem.html', item=itemToDelete)
+
 
 # Disconnect based on provider
 @app.route('/disconnect')
@@ -380,7 +422,10 @@ def disconnect():
         flash("You were not logged in")
         return redirect(url_for('showCategories'))
 
+
 if __name__ == '__main__':
-	app.debug = True
-	app.config['SECRET_KEY'] = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
-	app.run(host='0.0.0.0', port=5001)
+    app.debug = True
+    app.config['SECRET_KEY'] = ''.join(
+        random.choice(string.ascii_uppercase + string.digits) for x in
+        xrange(32))
+    app.run(host='0.0.0.0', port=5001)

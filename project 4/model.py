@@ -2,7 +2,8 @@ from sqlalchemy import Column, Integer, String, create_engine, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from passlib.apps import custom_app_context as pwd_context
-import random, string
+import random
+import string
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer,
                           BadSignature, SignatureExpired)
 
@@ -16,9 +17,20 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(32), index=True)
     password_hash = Column(String(64))
-    name = Column(String(250), nullable=False)
-    email = Column(String(250), nullable=False)
+    name = Column(String(250))
+    email = Column(String(250))
     picture = Column(String(250))
+    token = Column(String(250))
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'picture': self.picture,
+            'name': self.name,
+            'email': self.email
+        }
 
     def hash_password(self, password):
         self.password_hash = pwd_context.encrypt(password)
@@ -44,6 +56,7 @@ class User(Base):
         user_id = data['id']
         return user_id
 
+
 class Category(Base):
     __tablename__ = 'category'
 
@@ -54,11 +67,11 @@ class Category(Base):
 
     @property
     def serialize(self):
-        """Return object data in easily serializeable format"""
         return {
             'name': self.name,
             'id': self.id,
         }
+
 
 class CatalogItem(Base):
     __tablename__ = 'catalogitem'
@@ -73,14 +86,11 @@ class CatalogItem(Base):
 
     @property
     def serialize(self):
-        """Return object data in easily serializeable format"""
         return {
             'name': self.name,
             'description': self.description,
-            'id': self.id,
+            'id': self.id
         }
-
-
 
 
 engine = create_engine('sqlite:///catalog.db')
