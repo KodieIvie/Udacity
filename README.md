@@ -10,11 +10,19 @@ http://localhost:5000/api/json
 
 
 ******** getting started *********
-first install the following in your python environment.
+1. First install the following in your python 2.7 environment.
 
 sqlalchemy, flask, itsdangerous, passlib, flask_httpauth, oauth2client
 
-then run application.py and open http://localhost:5000 in your browser
+2. Run application.py and open http://localhost:5000 in your browser
 
 I reused code from api developer website's and from previous Udacity 
 projects like the Full Stack Foundations and Authentication and Authorization courses.
+
+
+					*****************************
+					!!!!**** !IMPORTANT! ****!!!!
+					*****************************
+
+This app was developed using python version 2.7 and might not work
+properly in other versions..
