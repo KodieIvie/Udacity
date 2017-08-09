@@ -15,3 +15,6 @@ first install the following in your python environment.
 sqlalchemy, flask, itsdangerous, passlib, flask_httpauth, oauth2client
 
 then run application.py and open http://localhost:5000 in your browser
+
+I reused code from api developer website's and from previous Udacity 
+projects like the Full Stack Foundations and Authentication and Authorization courses.
