@@ -15,6 +15,7 @@ from oauth2client.client import FlowExchangeError
 from flask import session as login_session
 from functools import wraps
 
+
 # great recommendation from previous udacity reviewer
 # helps keep code nice and dry
 def login_required(f):
@@ -339,6 +340,7 @@ def showCatalog(category_id):
         return render_template('catalog.html', items=items, category=category,
                                creator=creator)
 
+
 # Create a new catalog item
 @app.route('/category/<int:category_id>/catalog/new/', methods=['GET', 'POST'])
 @login_required
@@ -424,7 +426,7 @@ def disconnect():
             gdisconnect()
             del login_session['gplus_id']
             # del login_session['credentials']
-        
+
         # for facebook future addon
         # if login_session['provider'] == 'facebook':
         #     fbdisconnect()

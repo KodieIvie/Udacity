@@ -1,4 +1,3 @@
-
 from sqlalchemy import Column, Integer, String, create_engine, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
@@ -65,6 +64,7 @@ class Category(Base):
     name = Column(String(250), nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
+    catalog_item = relationship('CatalogItem', cascade='all, delete-orphan')
 
     @property
     def serialize(self):
