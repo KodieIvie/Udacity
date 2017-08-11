@@ -21,6 +21,7 @@ h3 {
 	font-size: 18px;
 	color: #4A4A4A;
 	line-height: 23px;
+	margin-top: 5px;
 }
  p {
  	font-family: "Helvetica Neue", Roboto, Helvetica, Arial, sans-serif;
@@ -113,7 +114,7 @@ h3 {
  .restaurant-list {
  	background-color: #F0F0F0;
  	padding: 20px;
-u }
+}
  .restaurant-list:hover {
  	background-color: #42C3C9;
  	padding: 20px;
@@ -121,8 +122,9 @@ u }
 .catalog-item {
 	background: #F0F0F0;
 	padding: 20px;
-	margin: 20px;
-	margin-left: -20px;
+	margin: 10px;
+	height: 125px;
+	overflow: auto;
 }
 .creator {
 	padding-right: 20px;
@@ -153,4 +155,7 @@ u }
 }
 .item {
 	border: 1px solid #7B7573;
+}
+#id {
+	margin: 0 auto;
 }

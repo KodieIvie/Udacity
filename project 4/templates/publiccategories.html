@@ -1,11 +1,7 @@
 {% extends "main.html" %}
 {% block content %}
-<div class="row top-menu">
-	<div class="col-md-10"></div>
-	<div class="col-md-2 text-right">
-		<a href="{{url_for('showLogin')}}">Click Here to Log in </a>
-	</div>
-</div>
+{% include "header.html" %}
+
 <div class="row divider blue">
 	<div class="col-md-12"></div>
 </div>
@@ -19,7 +15,7 @@
 <div class = 'flash'>
 	{% with messages = get_flashed_messages() %}
 	{% if messages %}
-	
+
 	<ul>
 		{% for message in messages %}
 		<li> <strong> {{ message }} </strong> </li>
@@ -28,6 +24,17 @@
 	{% endif %}
 	{% endwith %}
 
+</div>
+
+<div class="row padding-top padding-bottom">
+	<div class="col-md-1"></div>
+	<div class="col-md-10 padding-none">
+		<a href="{{url_for('newCategory')}}">
+			<button class="btn btn-default" id="new-category">
+				<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Category
+			</button>
+		</a>
+	</div>
 </div>
 
 {% if categories !=[] %}
@@ -43,10 +50,11 @@
 	<div class="col-md-3">
 		<div class="catalog-item">
 			<a href = "{{url_for('showCatalog', category_id = category.id)}}">
-				<h3>{{category.name}}</h3></a>
-			</div>
+				<h3>{{category.name}}</h3>
+			</a>
 		</div>
-		{% endfor %}
 	</div>
-	{% endif %}
-	{% endblock %}
+	{% endfor %}
+</div>
+{% endif %}
+{% endblock %}

@@ -13,6 +13,17 @@ from flask_httpauth import HTTPBasicAuth
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 from flask import session as login_session
+from functools import wraps
+
+# great recommendation from previous udacity reviewer
+# helps keep code nice and dry
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in login_session:
+            return redirect('/login')
+        return f(*args, **kwargs)
+    return decorated_function
 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
@@ -252,9 +263,10 @@ def showCategories():
 
 # Create a new category
 @app.route('/category/new/', methods=['GET', 'POST'])
+@login_required
 def newCategory():
-    if 'username' not in login_session:
-        return redirect('/login')
+    # if 'username' not in login_session:
+    #     return redirect('/login')
     if request.method == 'POST':
         newCategory = Category(
             name=request.form['name'], user_id=login_session['user_id'])
@@ -268,11 +280,12 @@ def newCategory():
 
 # Edit a category
 @app.route('/category/<int:category_id>/edit/', methods=['GET', 'POST'])
+@login_required
 def editCategory(category_id):
+    # if 'username' not in login_session:
+    #     return redirect('/login')
     editedCategory = session.query(
         Category).filter_by(id=category_id).one()
-    if 'username' not in login_session:
-        return redirect('/login')
     if editedCategory.user_id != login_session['user_id']:
         return "<script>function myFunction() {alert('You are not " \
                "authorized to edit this category. Please create your own " \
@@ -289,11 +302,12 @@ def editCategory(category_id):
 
 # Delete a category
 @app.route('/category/<int:category_id>/delete/', methods=['GET', 'POST'])
+@login_required
 def deleteCategory(category_id):
+    # if 'username' not in login_session:
+    #     return redirect('/login')
     categoryToDelete = session.query(
         Category).filter_by(id=category_id).one()
-    if 'username' not in login_session:
-        return redirect('/login')
     if categoryToDelete.user_id != login_session['user_id']:
         return "<script>function myFunction() {alert('You are not" \
                " authorized to delete this category. Please create " \
@@ -325,12 +339,12 @@ def showCatalog(category_id):
         return render_template('catalog.html', items=items, category=category,
                                creator=creator)
 
-
 # Create a new catalog item
 @app.route('/category/<int:category_id>/catalog/new/', methods=['GET', 'POST'])
+@login_required
 def newCatalogItem(category_id):
-    if 'username' not in login_session:
-        return redirect('/login')
+    # if 'username' not in login_session:
+    #     return redirect('/login')
     category = session.query(Category).filter_by(id=category_id).one()
     if login_session['user_id'] != category.user_id:
         return "<script>function myFunction() {alert('You are not " \
@@ -353,9 +367,10 @@ def newCatalogItem(category_id):
 # Edit a catalog item
 @app.route('/category/<int:category_id>/catalog/<int:catalog_id>/edit',
            methods=['GET', 'POST'])
+@login_required
 def editCatalogItem(category_id, catalog_id):
-    if 'username' not in login_session:
-        return redirect('/login')
+    # if 'username' not in login_session:
+    #     return redirect('/login')
     editedItem = session.query(CatalogItem).filter_by(id=catalog_id).one()
     category = session.query(Category).filter_by(id=category_id).one()
     if login_session['user_id'] != category.user_id:
@@ -381,9 +396,10 @@ def editCatalogItem(category_id, catalog_id):
 # Delete a catalog item
 @app.route('/category/<int:category_id>/catalog/<int:catalog_id>/delete',
            methods=['GET', 'POST'])
+@login_required
 def deleteCatalogItem(category_id, catalog_id):
-    if 'username' not in login_session:
-        return redirect('/login')
+    # if 'username' not in login_session:
+    #     return redirect('/login')
     category = session.query(Category).filter_by(id=category_id).one()
     itemToDelete = session.query(CatalogItem).filter_by(id=catalog_id).one()
     if login_session['user_id'] != category.user_id:
@@ -408,9 +424,11 @@ def disconnect():
             gdisconnect()
             del login_session['gplus_id']
             # del login_session['credentials']
-        if login_session['provider'] == 'facebook':
-            fbdisconnect()
-            del login_session['facebook_id']
+        
+        # for facebook future addon
+        # if login_session['provider'] == 'facebook':
+        #     fbdisconnect()
+        #     del login_session['facebook_id']
         del login_session['username']
         del login_session['email']
         del login_session['picture']

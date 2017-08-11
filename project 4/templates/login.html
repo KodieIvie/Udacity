@@ -1,10 +1,9 @@
 {% extends "main.html" %}
 {% block content %}
 {% include "header.html" %}
-<!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
-</script>
 
+<!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script src="https://apis.google.com/js/platform.js?onload=start"> </script>
 <!--meta name="google-signin-client_id" content="13140951618-15nik769cellkubaqnjk5facdib2dh4d.apps.googleusercontent.com"-->
 
@@ -21,42 +20,35 @@
 
 <!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
 
-
-</head>
-
-<body>
-  <div class="row divider blue">
-    <div class="col-md-12">
-    </div>
-  </div>
-  <div class="row banner main">
-    <div class="col-md-11 col-md-offset-1 padding-none">
-      <h1>Login with OAuth 2.0 </h1>
-    </div>
-  </div>
-<div class="row">
+<div class="row divider blue">
   <div class="col-md-12">
+  </div>
+</div>
+
+<div class="row banner main">
+  <div class="col-md-11 col-md-offset-1 padding-none">
+    <h1>Login with OAuth 2.0 </h1>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-4">
+    <!--GOOGLE SIGN IN BUTTON -->
+    <h2>Sign-in with google!</h2>
+    <div class="g-signin2" id="signinButton"></div>
+  </div>
+  <div class="col-md-8 col-offset-4">
     <div id="result"></div>
   </div>
 </div>
 
-  <!--NEW GOOGLE SIGN IN BUTTON -->
-  <h2>Sign-in with google!</h2>
+<script>
+  $('#signinButton').click(function() {
 
 
-
-  <button  class="g-signin2" id="signinButton">Sign in with Google</button>
-  <!-- Add where you want your sign-in button to render -->
-  <!-- Use an image that follows the branding guidelines in a real app -->
-
-  <script>
-    $('#signinButton').click(function() {
-
-
-      auth2.grantOfflineAccess({'redirect_uri': 'postmessage'}).then(signInCallback);
-    });
-  </script>
-</div>
+    auth2.grantOfflineAccess({'redirect_uri': 'postmessage'}).then(signInCallback);
+  });
+</script>
 
 <!--END NEW GOOGLE BUTTON -->
 
@@ -69,6 +61,7 @@
 
     // Hide the sign-in button now that the user is authorized
     $('#signinButton').attr('style', 'display: none');
+    $('h2').attr('style', 'display: none');
 
     // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
     $.ajax({
@@ -98,6 +91,9 @@
     }); } }
   </script>
 
+  {% endblock %}
+
+  <!-- expirement for later -->
 
 <!--a href='#' onclick="signOut();">Sign Out from Google <a/>
 <!--script>
@@ -124,4 +120,3 @@
 
 
 
-    {% endblock %}
